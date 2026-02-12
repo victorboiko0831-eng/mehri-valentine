@@ -304,8 +304,12 @@
     dodge(x,y);
   });
 
-  window.addEventListener('resize', () => { initNo(); resizeFx(); }, {passive:true});
+  window.addEventListener('resize', () => {
   initNo();
+  resizeFx();
+}, { passive: true });
+
+setTimeout(() => initNo(), 100);
 
   // confetti/hearts fx
   const canvas = document.getElementById('fx');
