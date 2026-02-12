@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#ff7cc9" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>Валентинка</title>
+  <style>
+    :root{
+      --bg1:#ff7cc9; --bg2:#7a5cff;
+      --card: rgba(255,255,255,.14); --card2: rgba(255,255,255,.08);
+      --text:#fff; --shadow: 0 18px 45px rgba(0,0,0,.28);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; color:var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", sans-serif;
+      overflow:hidden;
+      background:
+        radial-gradient(1200px 800px at 20% 20%, rgba(255,255,255,.25), transparent 55%),
+        radial-gradient(900px 700px at 80% 30%, rgba(255,255,255,.15), transparent 50%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+    }
+    .sparkles{
+      position:fixed; inset:0; pointer-events:none;
+      background-image:
+        radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.95) 50%, transparent 55%),
+        radial-gradient(1.5px 1.5px at 70% 20%, rgba(255,255,255,.85) 50%, transparent 55%),
+        radial-gradient(2px 2px at 80% 70%, rgba(255,255,255,.85) 50%, transparent 55%),
+        radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,.75) 50%, transparent 55%),
+        radial-gradient(1.5px 1.5px at 55% 55%, rgba(255,255,255,.75) 50%, transparent 55%);
+      opacity:.6; filter: blur(.2px);
+      animation: twinkle 3.8s ease-in-out infinite;
+    }
+    @keyframes twinkle{0%,100%{opacity:.45; transform: translateY(0)}50%{opacity:.8; transform: translateY(-2px)}}
+    .wrap{height:100%;display:grid;place-items:center;padding:18px}
+    .card{
+      width:min(680px, 100%);
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border:1px solid rgba(255,255,255,.18);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 26px 18px 18px;
+      position:relative; overflow:hidden;
+    }
+    .title{
+      margin:0; text-align:center; font-weight:900;
+      letter-spacing:.2px;
+      font-size: clamp(26px, 4.6vw, 44px);
+      text-shadow: 0 10px 28px rgba(0,0,0,.35);
+    }
+    .subtitle{
+      margin:10px 0 18px; text-align:center; font-weight:800;
+      font-size: clamp(16px, 2.7vw, 20px); opacity:.95;
+    }
+    .stage{
+      position:relative; margin: 0 auto;
+      width:min(560px, 100%);
+      height: clamp(240px, 38vh, 320px);
+      border-radius: 22px;
+      background: rgba(0,0,0,.10);
+      border:1px solid rgba(255,255,255,.12);
+      overflow:hidden; padding: 16px;
+      touch-action: none;
+    }
+    .hearts-bg{position:absolute; inset:0; pointer-events:none; opacity:.35}
+    .hearts-bg span{
+      position:absolute;
+      width:14px; height:14px;
+      background: rgba(255,255,255,.9);
+      transform: rotate(45deg);
+      border-radius: 4px;
+      animation: floatUp linear infinite;
+      filter: blur(.2px);
+    }
+    .hearts-bg span::before,.hearts-bg span::after{
+      content:""; position:absolute;
+      width:14px; height:14px;
+      background: rgba(255,255,255,.9);
+      border-radius:50%;
+    }
+    .hearts-bg span::before{ left:-7px; top:0; }
+    .hearts-bg span::after{ left:0; top:-7px; }
+    @keyframes floatUp{
+      from{ transform: translateY(30px) rotate(45deg); opacity:.0;}
+      10%{opacity:.45}
+      to{ transform: translateY(-360px) rotate(45deg); opacity:0;}
+    }
+    .buttons{
+      position:absolute; left:0; right:0; bottom:14px;
+      display:flex; justify-content:center; gap: 14px; padding: 0 14px;
+    }
+    button{
+      border:0; color:#fff; font-weight:900; font-size: 18px;
+      padding: 14px 22px; border-radius: 16px; min-width: 140px;
+      box-shadow: 0 14px 28px rgba(0,0,0,.28);
+      cursor:pointer; transition: transform .08s ease;
+      user-select:none; -webkit-tap-highlight-color: transparent;
+    }
+    button:active{ transform: scale(.98); }
+    #yesBtn{ background: linear-gradient(180deg, rgba(55,212,122,1), rgba(21,170,88,1)); z-index:4; }
+    #noBtn{
+      background: linear-gradient(180deg, rgba(255,79,90,1), rgba(220,40,55,1));
+      position:absolute; left: 20px; top: 120px; z-index:5;
+    }
+    .hint{ text-align:center; margin-top: 14px; opacity:.85; font-size: 14px; }
+    .overlay{
+      position:fixed; inset:0;
+      display:grid; place-items:center;
+      background: rgba(0,0,0,.25);
+      opacity:0; pointer-events:none;
+      transition: opacity .25s ease;
+    }
+    .overlay.show{ opacity:1; pointer-events:auto; }
+    .loveBox{
+      width:min(640px, 92vw);
+      padding: 26px 18px; border-radius: 26px;
+      background: rgba(255,255,255,.14);
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: var(--shadow);
+      text-align:center;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .bigLove{
+      font-size: clamp(34px, 8vw, 70px);
+      font-weight: 950; margin: 6px 0 6px;
+      text-shadow: 0 14px 34px rgba(0,0,0,.35);
+    }
+    .name{ font-size: clamp(18px, 3.5vw, 24px); font-weight: 900; opacity:.95; margin:0 0 10px; }
+    .closeBtn{
+      margin-top: 12px;
+      background: rgba(255,255,255,.18);
+      border:1px solid rgba(255,255,255,.22);
+      box-shadow: none;
+      min-width: 180px;
+    }
+    canvas#fx{ position:fixed; inset:0; pointer-events:none; }
+    .nope{
+      position:absolute;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.25);
+      border: 1px solid rgba(255,255,255,.18);
+      font-weight: 900; font-size: 12px;
+      opacity:0;
+      transform: translate(-50%,-140%);
+      transition: opacity .15s ease;
+      pointer-events:none;
+    }
+    .nope.show{ opacity:1; }
+  </style>
+</head>
+<body>
+  <div class="sparkles"></div>
+  <canvas id="fx"></canvas>
+
+  <div class="wrap">
+    <div class="card">
+      <h1 class="title">Мехри</h1>
+      <div class="subtitle">Будешь моей валентинкой?</div>
+
+      <div class="stage" id="stage">
+        <div class="hearts-bg" id="heartsBg"></div>
+
+        <div class="buttons">
+          <button id="yesBtn" type="button">Да</button>
+          <button id="noBtn" type="button">Нет</button>
+        </div>
+
+        <div class="nope" id="nope">Не-а 😄</div>
+      </div>
+
+      <div class="hint">Попробуй нажать «Нет» 🙂</div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="loveBox">
+      <div class="name">Для Мехри 💗</div>
+      <div class="bigLove">Я тебя люблю!</div>
+      <div style="opacity:.92;font-weight:800;">Ты — моя магия ✨</div>
+      <button class="closeBtn" id="closeBtn" type="button">Ещё раз</button>
+    </div>
+  </div>
+
+<script>
+(() => {
+  // PWA SW
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+  }
+
+  const stage = document.getElementById('stage');
+  const noBtn = document.getElementById('noBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const overlay = document.getElementById('overlay');
+  const closeBtn = document.getElementById('closeBtn');
+  const nope = document.getElementById('nope');
+  const heartsBg = document.getElementById('heartsBg');
+
+  // фоновые сердечки
+  function seedHearts(){
+    heartsBg.innerHTML = '';
+    const n = 18;
+    for(let i=0;i<n;i++){
+      const s = document.createElement('span');
+      const left = Math.random()*100;
+      const delay = Math.random()*2.5;
+      const dur = 3.5 + Math.random()*3.5;
+      const size = 10 + Math.random()*12;
+      s.style.left = left + '%';
+      s.style.bottom = (-10 - Math.random()*40) + 'px';
+      s.style.animationDelay = delay + 's';
+      s.style.animationDuration = dur + 's';
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      heartsBg.appendChild(s);
+    }
+  }
+  seedHearts();
+  setInterval(seedHearts, 5200);
+
+  // dodging "Нет"
+  function clamp(v, a, b){ return Math.max(a, Math.min(b, v)); }
+
+  function placeNo(x, y){
+    const w = noBtn.offsetWidth;
+    const h = noBtn.offsetHeight;
+    const pad = 10;
+    const maxX = stage.clientWidth - w - pad;
+    const maxY = stage.clientHeight - h - pad;
+    const nx = clamp(x, pad, maxX);
+    const ny = clamp(y, pad, maxY);
+    noBtn.style.left = nx + 'px';
+    noBtn.style.top  = ny + 'px';
+  }
+
+  function initNo(){
+    const x = stage.clientWidth * (0.22 + Math.random()*0.35);
+    const y = stage.clientHeight * (0.45 + Math.random()*0.25);
+    placeNo(x, y);
+  }
+
+  function showNopeAt(x, y){
+    nope.style.left = x + 'px';
+    nope.style.top  = y + 'px';
+    nope.classList.add('show');
+    clearTimeout(showNopeAt.t);
+    showNopeAt.t = setTimeout(()=> nope.classList.remove('show'), 350);
+  }
+
+  function getPointFromEvent(e){
+    const t = (e.touches && e.touches[0]) ? e.touches[0] : e;
+    return {x: t.clientX, y: t.clientY};
+  }
+
+  function dodge(pointerX, pointerY){
+    const stageRect = stage.getBoundingClientRect();
+    const noRect = noBtn.getBoundingClientRect();
+
+    const px = pointerX - stageRect.left;
+    const py = pointerY - stageRect.top;
+
+    const cx = (noRect.left - stageRect.left) + noRect.width/2;
+    const cy = (noRect.top  - stageRect.top ) + noRect.height/2;
+
+    let dx = cx - px;
+    let dy = cy - py;
+
+    const dist = Math.hypot(dx, dy) || 1;
+    dx /= dist; dy /= dist;
+
+    const jump = 130;
+    const rand = 48;
+
+    const nx = (noRect.left - stageRect.left) + dx*jump + (Math.random()*2-1)*rand;
+    const ny = (noRect.top  - stageRect.top ) + dy*jump + (Math.random()*2-1)*rand;
+
+    placeNo(nx, ny);
+    showNopeAt(cx, cy);
+    if (navigator.vibrate) navigator.vibrate(10);
+  }
+
+  function onMove(e){
+    const {x,y} = getPointFromEvent(e);
+    const rNo = noBtn.getBoundingClientRect();
+    const cx = rNo.left + rNo.width/2;
+    const cy = rNo.top  + rNo.height/2;
+    const d = Math.hypot(x - cx, y - cy);
+    if(d < 95) dodge(x,y);
+  }
+
+  stage.addEventListener('mousemove', onMove, {passive:true});
+  stage.addEventListener('touchmove', onMove, {passive:true});
+  noBtn.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    const {x,y} = getPointFromEvent(e);
+    dodge(x,y);
+  });
+
+  window.addEventListener('resize', () => { initNo(); resizeFx(); }, {passive:true});
+  initNo();
+
+  // confetti/hearts fx
+  const canvas = document.getElementById('fx');
+  const ctx = canvas.getContext('2d', { alpha: true });
+
+  function resizeFx(){
+    const dpr = Math.max(1, window.devicePixelRatio || 1);
+    canvas.width  = Math.floor(window.innerWidth  * dpr);
+    canvas.height = Math.floor(window.innerHeight * dpr);
+    canvas.style.width  = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  resizeFx();
+
+  const particles = [];
+  function rand(a,b){ return a + Math.random()*(b-a); }
+
+  function spawnBurst(){
+    const count = 160;
+    const ox = window.innerWidth/2;
+    const oy = window.innerHeight*0.58;
+    for(let i=0;i<count;i++){
+      particles.push({
+        x: ox + rand(-30,30),
+        y: oy + rand(-20,20),
+        vx: rand(-5.4,5.4),
+        vy: rand(-11.2,-4.8),
+        g: 0.22 + Math.random()*0.08,
+        rot: rand(0,Math.PI*2),
+        vr: rand(-0.2,0.2),
+        s: rand(8,18),
+        life: 120 + Math.random()*80,
+        kind: Math.random() < 0.75 ? 'heart' : 'confetti',
+        alpha: 1
+      });
+    }
+  }
+
+  function drawHeart(x,y,size,rot,alpha){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(rot);
+    ctx.globalAlpha = alpha;
+
+    const g = ctx.createLinearGradient(-size, -size, size, size);
+    g.addColorStop(0, 'rgba(255,255,255,0.95)');
+    g.addColorStop(1, 'rgba(255,120,200,0.95)');
+    ctx.fillStyle = g;
+
+    ctx.beginPath();
+    const s = size;
+    ctx.moveTo(0, s*0.35);
+    ctx.bezierCurveTo(s*0.9, -s*0.2, s*0.65, -s*1.05, 0, -s*0.55);
+    ctx.bezierCurveTo(-s*0.65, -s*1.05, -s*0.9, -s*0.2, 0, s*0.35);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawConfetti(x,y,size,rot,alpha){
+    ctx.save();
+    ctx.translate(x,y);
+    ctx.rotate(rot);
+    ctx.globalAlpha = alpha;
+    const g = ctx.createLinearGradient(-size,0,size,0);
+    g.addColorStop(0, 'rgba(255,255,255,0.95)');
+    g.addColorStop(1, 'rgba(255,210,240,0.95)');
+    ctx.fillStyle = g;
+    ctx.fillRect(-size*0.6, -size*0.18, size*1.2, size*0.36);
+    ctx.restore();
+  }
+
+  let animId = null;
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(let i=particles.length-1;i>=0;i--){
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy; p.vy += p.g; p.rot += p.vr; p.life -= 1;
+      if(p.life < 35) p.alpha = p.life / 35;
+      if(p.kind === 'heart') drawHeart(p.x,p.y,p.s,p.rot,p.alpha);
+      else drawConfetti(p.x,p.y,p.s,p.rot,p.alpha);
+      if(p.life <= 0 || p.y > window.innerHeight + 80) particles.splice(i,1);
+    }
+    if(particles.length > 0) animId = requestAnimationFrame(tick);
+    else { cancelAnimationFrame(animId); animId = null; }
+  }
+
+  function celebrate(){
+    overlay.classList.add('show');
+    spawnBurst(); if(!animId) tick();
+    setTimeout(() => { spawnBurst(); if(!animId) tick(); }, 220);
+    setTimeout(() => { spawnBurst(); if(!animId) tick(); }, 560);
+    if (navigator.vibrate) navigator.vibrate([20,30,20]);
+  }
+
+  yesBtn.addEventListener('click', celebrate);
+  closeBtn.addEventListener('click', () => { overlay.classList.remove('show'); initNo(); });
+})();
+</script>
+</body>
+</html>
